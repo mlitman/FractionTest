@@ -1,133 +1,164 @@
+/**
+ * Fixed the Fraction clas attributes
+ *
+ * Fixed the toString and toDouble
+ *
+ * Added Arithmetic operations for 2 fractions
+ * */
+public class Fraction {
+	private int numerator;
+	private int denominator;
 
-/*
- * f1 = Fraction(1,2)
- * class Fraction:
- * 	__init__(self, numerator, denominator):
- *   self.numerator = numerator
- *   self.denominator = denominator
- */
-public class Fraction 
-{
-	//fields - variables associated with a class
-	long numerator;
-	long denominator;
-	
-	//constructor
-	public Fraction(long numerator, long denominator)
-	{
+
+	/**
+	 * Constructs a fraction with 0 as numerator and 0 as denominator
+	 * */
+	public Fraction(){
+		this.numerator = 0;
+		this.denominator = 0;
+	}
+
+	/**
+	 * Constructs a fraction with numerator assigned to numerator, and denominator assigned to denominator
+	 * */
+	public Fraction( int numerator, int denominator){
 		this.numerator = numerator;
 		this.denominator = denominator;
 	}
-	
-	public Fraction(String f)
-	{
-		//f is in the format of "numerator/denominator" so
-		//somehow (using only what we have learned in class)
-		//divide the string and set the numerator and denominator
-		String numString = "";
-		int pos = 0;
-		while(f.charAt(pos) != '/')
-		{
-			numString = numString + f.charAt(pos);
-			pos = pos + 1;
-		}
-		
-		pos = pos + 1; //skips past the /
-		String denomString = "";
-		while(pos < f.length())
-		{
-			denomString = denomString + f.charAt(pos);
-			pos = pos + 1;
-		}
-		this.numerator = this.stringToInt(numString);
-		this.denominator = this.stringToInt(denomString);
+
+	/**
+	 * Returns the numerator of the fraction
+	 * */
+	public int getNumerator(){
+		return numerator;
 	}
-	
-	static Fraction buildFraction(long numerator, long denominator)
-	{
-		return new Fraction(numerator, denominator);
+
+	/**
+	 * Returns the denominator of the fraction
+	 * */
+	public int getDenominator(){
+		return denominator;
 	}
-	
-	//methods
-	public Fraction add(Fraction f)
-	{
-		//adds f to "this" Fraction and returns
-		//a new Fraction object that is the sum
-		//of the two
-		long denom = this.denominator * f.denominator;
-		long num = (this.denominator * f.numerator) + 
-				(f.denominator * this.numerator);
-		Fraction answer = new Fraction(num, denom);
-		return answer;
+
+
+	/**
+	 * Sets the numerator of the fraction
+	 * */
+	public void setNumerator(int numerator){
+		this.numerator = numerator;
 	}
-	
-	public void reduceEuclidean()
-	{
-		long a = this.numerator;
-		long b = this.denominator;
-		long t;
-		while(b != 0)
-		{
-			t = b;
-			b = a % b;
-			a = t;
-		}
-		//a is now our GCD of numerator and denominator
-		this.numerator = this.numerator / a;
-		this.denominator = this.denominator / a;
+
+	/**
+	 * Sets the denominator of the fraction
+	 * */
+	public void setDenominator(int denominator){
+		this.denominator = denominator;
 	}
-	
-	public void reduce()
-	{
-		long smallest = this.numerator;
-		if(this.denominator < smallest)
-		{
-			smallest = this.denominator;
-		}
-		//smallest is the smaller of the 2 numbers
-		//Find the GCD (Greatest Common Divisor)
-		while(smallest >= 1)
-		{
-			if(this.numerator % smallest == 0 &&
-					this.denominator % smallest == 0)
-			{
-				//we have found the GCD, it is smallest
-				this.numerator = this.numerator / smallest;
-				this.denominator = this.denominator / smallest;
-				return; //I have found and applied the GCD, so kill the method
-			}
-			else
-			{
-				smallest = smallest - 1;
-			}
-		}
+
+	/**
+	 * Computes the Greatest Common Divisor(GCD) using Euclid's algorithm
+	 * */
+	private int computeGCD(int firstNum, int secondNum){
+		if (firstNum == 0)
+			return secondNum;
+
+		return computeGCD(secondNum % firstNum, firstNum);
 	}
-	
-	private int stringToInt(String dec)
-	{
-		int sum = 0;
-		int place = 1;
-		String map = "0123456789";
-		for(int i = dec.length()-1; i >= 0; i = i - 1)
-		{
-			sum = sum + (place * map.indexOf(dec.charAt(i)));
-			place = place * 10;
-		}
-		return sum;
+
+	/**
+	 * Returns a string showing the fraction
+	 * */
+	public String toString(){
+		return this.numerator + " / " + this.denominator;
 	}
-	//this overrides the default toString method we inherited
-	//from the Object class and allows us to do our own thing
-	//historic function - returns a value
-	public String toString()
-	{
-		return this.numerator + "/" + this.denominator;
+
+	/**
+	 * Returns the double value of the  fraction
+	 * */
+	public double toDouble(){
+		return (double) this.numerator / this.denominator;
 	}
-	
-	//historic procedure - does NOT return a value
-	public void display()
-	{
-		
-		System.out.println(this.numerator + "/" + this.denominator);
+
+
+	/**
+	 * Method that adds the two fractions
+	 * */
+	public Fraction add(Fraction fraction){
+
+		int numAnswer = 0;
+		int denAnswer = 0;
+
+		denAnswer = (computeGCD(this.denominator, fraction.getDenominator()));
+
+		denAnswer = (this.denominator * fraction.getDenominator()) / denAnswer;
+
+		numAnswer  = ((this.numerator) * (denAnswer/this.denominator)) + (fraction.getNumerator() * (denAnswer / fraction.getDenominator()));
+
+		Fraction additionAnswer = new Fraction(numAnswer, denAnswer);
+
+		return additionAnswer;
 	}
-	
+
+	/**
+	 * Method that subtracts the two fractions
+	 * */
+	public Fraction subtract(Fraction fraction){
+
+		int denAnswer = 0;
+		int numAnswer = 0;
+
+		denAnswer = (computeGCD(this.denominator, fraction.getDenominator()));
+
+		denAnswer = (this.denominator * fraction.getDenominator()) / denAnswer;
+
+		numAnswer  = ((this.numerator) * (denAnswer/this.denominator)) - (fraction.getNumerator() * (denAnswer / fraction.getDenominator()));
+
+		Fraction subtractionAnswer = new Fraction(numAnswer, denAnswer);
+
+		return subtractionAnswer;
+	}
+
+	/**
+	 * Method that multiplies the two fractions
+	 * */
+	public Fraction multiplyBy(Fraction fraction){
+		int numAnswer = 0;
+		int denAnswer = 0;
+
+		numAnswer = (this.numerator * fraction.getNumerator());
+		denAnswer = (this.denominator * fraction.getDenominator());
+
+		Fraction multiplicationAnswer = new Fraction(numAnswer, denAnswer);
+
+		return multiplicationAnswer;
+	}
+
+	/**
+	 * Method that divides the two fractions
+	 * */
+	public Fraction divideBy(Fraction fraction){
+		int numAnswer = 0;
+		int denAnswer = 0;
+
+		numAnswer = (this.numerator * fraction.getDenominator());
+		denAnswer = (this.denominator * fraction.getNumerator());
+
+		Fraction divisionAnswer = new Fraction(numAnswer, denAnswer);
+
+		return divisionAnswer;
+	}
+
+
+	/**
+	 * Reduces a fraction into its lowest form
+	 * */
+	public Fraction reduceFraction(){
+		int GCD = 0;
+
+		GCD = computeGCD(this.numerator, this.denominator);
+
+		Fraction reducedFraction = new Fraction((this.numerator / GCD), (this.denominator / GCD));
+
+		return reducedFraction;
+	}
 }
